@@ -19,7 +19,7 @@ export default class NewBill {
     e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const filePath = e.target.value.split(/\\/g)
-    const fileName = filePath[filePath.length-1]
+    const fileName = filePath[filePath.length-1]    
     const formData = new FormData()
     const email = JSON.parse(localStorage.getItem("user")).email
     formData.append('file', file)
@@ -57,8 +57,14 @@ export default class NewBill {
       fileName: this.fileName,
       status: 'pending'
     }
-    this.updateBill(bill)
-    this.onNavigate(ROUTES_PATH['Bills'])
+    const extension = bill.fileName.split('.').pop();
+    if(extension == 'jpg' || extension == 'png' || extension == 'jpeg') {
+      this.updateBill(bill)
+      this.onNavigate(ROUTES_PATH['Bills'])
+    }
+    else{
+      alert('Mauvais format de votre image')
+    }
   }
 
   // not need to cover this function by tests
@@ -71,6 +77,9 @@ export default class NewBill {
         this.onNavigate(ROUTES_PATH['Bills'])
       })
       .catch(error => console.error(error))
+    }
+    else{
+      throw new Error("Il n'y a pas de .store")
     }
   }
 }

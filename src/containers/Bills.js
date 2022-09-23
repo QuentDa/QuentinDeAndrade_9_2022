@@ -1,5 +1,4 @@
 import { ROUTES_PATH } from '../constants/routes.js'
-import { formatDate, formatStatus } from "../app/format.js"
 import Logout from "./Logout.js"
 
 export default class Bills {
@@ -26,10 +25,6 @@ export default class Bills {
     $('#modaleFile').find(".modal-body").html(`<div style='text-align: center;' class="bill-proof-container"><img width=${imgWidth} src=${billUrl} alt="Bill" /></div>`)
     $('#modaleFile').modal('show')
   }
-
-  static getOrderedBills(bills) {
-    return bills.sort((a, b) => (a.date < b.date) ? 1 : -1)
-  }
   
   getBills = () => {
     if (this.store) {
@@ -38,27 +33,8 @@ export default class Bills {
       .list()
       .then(snapshot => {
           let bills = snapshot
-          //.sort((a, b) => (a.date < b.date) ? 1 : -1)
-          .map(doc => {
-            try {
-              return {
-                ...doc,
-                date: formatDate(doc.date),
-                status: formatStatus(doc.status)
-              }
-            } catch(e) {
-              // if for some reason, corrupted data was introduced, we manage here failing formatDate function
-              // log the error and return unformatted date in that case
-              console.log(e,'for',doc)
-              return {
-                ...doc,
-                date: doc.date,
-                status: formatStatus(doc.status)
-              }
-            }
-          })
-          console.log('length', bills.length)
-          bills = Bills.getOrderedBills(bills)
+          .sort((a, b) => (a.date < b.date) ? 1 : -1)
+
         return bills
       })
     }

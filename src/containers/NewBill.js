@@ -17,6 +17,7 @@ export default class NewBill {
   }
   handleChangeFile = e => {
     e.preventDefault()
+    e.stopImmediatePropagation()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]    
@@ -24,8 +25,9 @@ export default class NewBill {
     const email = JSON.parse(localStorage.getItem("user")).email
     formData.append('file', file)
     formData.append('email', email)
-
-    this.store
+    const extension = file.name.split('.').pop();
+    if(extension == 'jpg' || extension == 'png' || extension == 'jpeg') {
+      this.store
       .bills()
       .create({
         data: formData,
@@ -39,6 +41,9 @@ export default class NewBill {
         this.fileUrl = fileUrl
         this.fileName = fileName
       }).catch(error => console.error(error))
+    }
+
+    
   }
   handleSubmit = e => {
     e.preventDefault()
@@ -57,14 +62,8 @@ export default class NewBill {
       fileName: this.fileName,
       status: 'pending'
     }
-    const extension = bill.fileName.split('.').pop();
-    if(extension == 'jpg' || extension == 'png' || extension == 'jpeg') {
       this.updateBill(bill)
       this.onNavigate(ROUTES_PATH['Bills'])
-    }
-    else{
-      alert('Mauvais format de votre image')
-    }
   }
 
   // not need to cover this function by tests
@@ -77,9 +76,6 @@ export default class NewBill {
         this.onNavigate(ROUTES_PATH['Bills'])
       })
       .catch(error => console.error(error))
-    }
-    else{
-      throw new Error("Il n'y a pas de .store")
     }
   }
 }
